@@ -93,7 +93,7 @@ function populate() {
 
 			//This needs work :/
 			target = bots[0].nearestEntity((entity)=>{
-				return(entity.username != bossName && !(entity.username||'').startsWith(name));
+				return(entity.username != bossName && !(entity.username||'').startsWith(prefix));
 			});
 		});
 	}
