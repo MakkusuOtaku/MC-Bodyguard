@@ -112,11 +112,25 @@ function populate() {
 			//Ignore if the harmed entity is not the boss
 			if (entity.username != bossName) return;
 
+			let entities = [];
+
+			for (const id of Object.keys(bots[0].entities)) {
+				const entity = bots[0].entities[id];
+				if (entity.username != bossName && !(entity.username || '').startsWith(prefix) && entity.type === 'mob') {
+					entities.push(entity);
+				}
+			}
+
+			entities = entities.sort((a, b)=>{
+				//Sort by lowest distance to the boss
+				return (a.position.xzDistanceTo(entity.position) - b.position.xzDistanceTo(entity.position));
+			}).filter((entity)=>{
+				if (entity) return entity;
+			});
+
 			//Select the entity that hurt the boss, by selecting the nearest entity that is not the boss or another Guard
 			//This needs work :/
-			target = bots[0].nearestEntity((entity)=>{
-				return(entity.username != bossName && !(entity.username||'').startsWith(prefix));
-			});
+			if (entities[0]) target = entities[0];
 		});
 	}
 }
