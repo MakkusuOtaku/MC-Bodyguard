@@ -1,8 +1,10 @@
 const mineflayer = require('mineflayer');
 const fs = require('fs');
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder');
+
 const meleePlugin = require('./melee.js');
 const archeryPlugin = require('./archery.js');
+const armorPlugin = require('./armor.js');
 
 if (process.argv.length < 5) process.exit();
 
@@ -34,6 +36,7 @@ bot.on('error', console.log);
 bot.loadPlugin(pathfinder);
 bot.loadPlugin(meleePlugin);
 bot.loadPlugin(archeryPlugin);
+bot.loadPlugin(armorPlugin);
 
 bot.getEntity = (name)=>{
 	return bot.nearestEntity((entity)=>{
