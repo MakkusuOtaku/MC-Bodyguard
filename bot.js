@@ -90,6 +90,31 @@ bot.commands = {
 		guarding = true;
 	},
 
+	"eat": async ({ log })=>{
+		if (bot.food === 20) {
+			log(`Too full to eat`);
+			return;
+		}
+
+		for (food of bot.registry.foodsArray) {
+			const amount = bot.inventory.count(food.id);
+
+			if (amount === 0) continue;
+
+			log(`Found ${amount} ${food.displayName}`);
+			
+			await bot.equip(food.id);
+
+			await bot.consume();
+
+			log(`Ate 1 ${food.displayName}`);
+
+			return;
+		}
+
+		log("Out of food");
+	},
+
 	"guard": async (username, { log })=>{
 		const player = bot.players[username];
 
