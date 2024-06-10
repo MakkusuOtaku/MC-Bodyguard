@@ -105,8 +105,8 @@ bot.commands = {
 		log("pong");
 	},
 
-	"stop": async ()=>{
-		bot.chat("Stopping.");
+	"stop": async ({ log })=>{
+		log("Stopping.");
 		bot.pathfinder.setGoal(null);
 		guarding = false;
 	},
@@ -168,8 +168,6 @@ bot.on("chat", async (username, message)=>{
 	const tokens = message.split(' ');
 
 	await runCommand(tokens, user=username, log=bot.chat);
-
-    bot.chat("Completed:"+tokens.join('-'));
 });
 
 bot.on('entityGone', (entity)=>{

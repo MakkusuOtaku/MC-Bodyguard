@@ -36,10 +36,10 @@ module.exports = (bot)=>{
 		await shoot(bot, target);
 	};
 
-	bot.commands.shoot = async (targetName)=>{
+	bot.commands.shoot = async (targetName, { log })=>{
 		const target = bot.getEntity(targetName);
 
 		if (target) bot.archery.shoot(target);
-		else bot.chat(`Couldn't find ${targetName}.`);
+		else log(`Couldn't find ${targetName}.`);
 	};
 };

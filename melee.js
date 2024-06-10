@@ -52,19 +52,19 @@ module.exports = (bot)=>{
 		await punch(bot, target);
 	};
 
-	bot.commands.crit = async (targetName)=>{
+	bot.commands.crit = async (targetName, { log })=>{
 		const target = bot.getEntity(targetName);
 		
 		if (target) await bot.combat.crit(target);
-		else bot.chat(`Couldn't find ${targetName}.`);
+		else log(`Couldn't find ${targetName}.`);
     };
 
 	bot.commands.equip = bot.melee.equip;
 
-	bot.commands.punch = async (targetName)=>{
+	bot.commands.punch = async (targetName, { log })=>{
 		const target = bot.getEntity(targetName);
 
 		if (target) bot.combat.punch(target);
-		else bot.chat(`Couldn't find ${targetName}.`);
+		else log(`Couldn't find ${targetName}.`);
 	};
 };
