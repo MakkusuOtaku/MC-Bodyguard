@@ -24,17 +24,6 @@ function spawnBot(botName) {
 
 	bots.push(bot);
 	botsByName[botName] = bot;
-
-	/*bot.send({
-		text: "Testing communication.",
-		value: 200,
-	});
-
-	bot.on('message', (data) => {
-		if (data.type === "status-report") {
-			console.log(`${botName}: ${data.health}`);
-		}
-	});*/
 }
 
 async function spawnBots(amount=1) {
@@ -83,10 +72,6 @@ function runCommand(command) {
 	}
 
 	commandFunction(...tokens.slice(1));
-
-	/*if (tokens[0] === "spawn") {
-		spawnBots(tokens[1]);
-	}*/
 }
 
 function inputLoop(command) {
