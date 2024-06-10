@@ -24,6 +24,12 @@ function spawnBot(botName) {
 
 	bots.push(bot);
 	botsByName[botName] = bot;
+
+	bot.on('message', (data) => {
+		if (data.type === "message") {
+			console.log(`\x1b[32m@${botName}\x1b[0m: ${data.text}`);
+		}
+	});
 }
 
 async function spawnBots(amount=1) {

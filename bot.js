@@ -126,9 +126,16 @@ async function runCommand(tokens, user, log) {
     });
 }
 
+function sendMessage(text) {
+	process.send({
+		type: "message",
+		text: text,
+	});
+}
+
 process.on('message', (data)=>{
 	if (data.type === "command") {
-		runCommand(data.command, user="admin", log=console.log);
+		runCommand(data.command, user="admin", log=sendMessage);
 		return;
 	}
 
