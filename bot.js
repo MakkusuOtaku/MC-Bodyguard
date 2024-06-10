@@ -202,6 +202,14 @@ bot.on("chat", async (username, message)=>{
 	await runCommand(tokens, user=username, log=bot.chat);
 });
 
+bot.on("whisper", async (username, message)=>{
+	if (!bossList.includes(username)) return;
+
+	const tokens = message.split(' ');
+
+	await runCommand(tokens, user=username, log=(text)=>bot.whisper(username, text));
+});
+
 bot.on('entityGone', (entity)=>{
 	const targetIndex = targetList.indexOf(entity);
 
