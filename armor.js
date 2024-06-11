@@ -5,11 +5,16 @@ const leggings = ["netherite_leggings", "diamond_leggings", "iron_leggings", "go
 const boots = ["netherite_boots", "diamond_boots", "iron_boots", "golden_boots", "leather_boots"];
 
 async function equipArmorItem(bot, armorList, slot) {
+    // TODO: scan once and equip best found (like in printer bot)
+    
 	for (itemName of armorList) {
-		let item = bot.registry.itemsByName[itemName];
-		let hasItem = bot.inventory.count(item.id) > 0;
+		const item = bot.registry.itemsByName[itemName];
+
+        const foundItem = bot.inventory.slots.find((inventoryItem)=>{
+            return inventoryItem && inventoryItem.name === itemName;
+        });
 		
-		if (hasItem) {
+		if (foundItem) {
 			await bot.equip(item.id, slot);
 			break;
 		}
