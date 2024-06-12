@@ -4,21 +4,25 @@ const chestplates = ["netherite_chestplate", "diamond_chestplate", "iron_chestpl
 const leggings = ["netherite_leggings", "diamond_leggings", "iron_leggings", "golden_leggings", "leather_leggings"];
 const boots = ["netherite_boots", "diamond_boots", "iron_boots", "golden_boots", "leather_boots"];
 
+// FIXME
 async function equipArmorItem(bot, armorList, slot) {
-    // TODO: scan once and equip best found (like in printer bot)
-    
-	for (itemName of armorList) {
-		const item = bot.registry.itemsByName[itemName];
+    let bestIndex;
 
-        const foundItem = bot.inventory.slots.find((inventoryItem)=>{
-            return inventoryItem && inventoryItem.name === itemName;
-        });
-		
-		if (foundItem) {
-			await bot.equip(item.id, slot);
-			break;
-		}
-	}
+    for (item of bot.inventory.slots) {
+        if (!item) continue;
+
+        const index = armorList.indexOf(item.name);
+
+        if ((index !== -1) && ((bestIndex === undefined) || (index < bestIndex))) {
+            bestIndex = index;
+        }
+    }
+
+    if (bestIndex !== undefined) {
+        const itemName = armorList[bestIndex];
+        const item = bot.registry.itemsByName[itemName];
+        await bot.equip(item.id, slot).catch(()=>{});
+    }
 }
 
 module.exports = (bot)=>{
