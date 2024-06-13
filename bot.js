@@ -45,6 +45,22 @@ bot.getEntity = (name)=>{
 	});
 }
 
+function findThreat() {
+	return bot.nearestEntity((entity)=>{
+		if (entity.kind !== "Hostile mobs") return false;
+
+		const distanceFromBot = entity.position.distanceTo(bot.entity.position);
+
+		if (distanceFromBot < 8) return true;
+
+		if (!guardedPlayer || !guardPlayer.entity) return false;
+
+		const distanceFromPlayer = entity.position.distanceTo(guardedPlayer.entity.position);
+
+		if (distanceFromPlayer < 16) return true;
+	});
+}
+
 async function attackEnemy(enemy) {
 	const pos = bot.entity.position;
 	const enemyGoal = new goals.GoalNear(pos.x, pos.y, pos.z, 4);
@@ -74,11 +90,7 @@ async function attackEnemy(enemy) {
 async function loop() {
 	if (!guarding) return;
 
-	let enemy = bot.nearestEntity((entity)=>{
-		if (entity.kind !== "Hostile mobs") return false;
-		if (entity.position.distanceTo(guardedPlayer.entity.position) < 16) return true;
-		if (entity.position.distanceTo(bot.entity.position) < 8) return true;
-	});
+	const enemy = findThreat();
 
 	if (enemy) {
 		await attackEnemy(enemy);
@@ -195,6 +207,9 @@ bot.once("spawn", async ()=>{
 			guardedPlayer = bot.players[foundBoss.username];
 			break;
 		}
+
+		const enemy = findThreat();
+		if (enemy) await attackEnemy(enemy);
 
 		await bot.waitForTicks(5);
 	}
