@@ -11,6 +11,7 @@ if (process.argv.length < 5) process.exit();
 const [botName, hostName, hostPort] = process.argv.slice(2);
 
 const LINE_BREAKS = /\r?\n/g;
+const HUNGER_LIMIT = 5;
 
 const bossList = fs.readFileSync("boss-list.txt", "utf8").split(LINE_BREAKS);
 const targetList = fs.readFileSync("target-list.txt", "utf8").split(LINE_BREAKS);
@@ -88,34 +89,38 @@ async function loop() {
 	await bot.pathfinder.goto(goal);
 }
 
+async function eatFood(log=sendMessage) {
+	if (bot.food === 20) {
+		log(`too full to eat`);
+		return;
+	}
+
+	for (food of bot.registry.foodsArray) {
+		const amount = bot.inventory.count(food.id);
+
+		if (amount === 0) continue;
+
+		log(`found ${amount} ${food.displayName}`);
+		
+		await bot.equip(food.id);
+
+		await bot.consume();
+
+		log(`ate 1 ${food.displayName}`);
+
+		return;
+	}
+
+	log("out of food");
+}
+
 bot.commands = {
 	"continue": async ()=>{
 		guarding = true;
 	},
 
 	"eat": async ({ log })=>{
-		if (bot.food === 20) {
-			log(`Too full to eat`);
-			return;
-		}
-
-		for (food of bot.registry.foodsArray) {
-			const amount = bot.inventory.count(food.id);
-
-			if (amount === 0) continue;
-
-			log(`Found ${amount} ${food.displayName}`);
-			
-			await bot.equip(food.id);
-
-			await bot.consume();
-
-			log(`Ate 1 ${food.displayName}`);
-
-			return;
-		}
-
-		log("Out of food");
+		await eatFood(log);
 	},
 
 	"guard": async (username, { log })=>{
@@ -131,6 +136,10 @@ bot.commands = {
 
 	"ping": async ({ log })=>{
 		log("pong");
+	},
+
+	"status": async ({ log })=>{
+		log(`❤${bot.health} 🥕${bot.food}`);
 	},
 
 	"stop": async ({ log })=>{
@@ -211,6 +220,14 @@ bot.on("whisper", async (username, message)=>{
 	const tokens = message.split(' ');
 
 	await runCommand(tokens, user=username, log=(text)=>bot.whisper(username, text));
+});
+
+bot.on("health", async ()=>{
+	if (bot.food > HUNGER_LIMIT) return;
+
+	sendMessage(`hunger has reached ${bot.food}!`);
+
+	await eatFood();
 });
 
 bot.on('entityGone', (entity)=>{
