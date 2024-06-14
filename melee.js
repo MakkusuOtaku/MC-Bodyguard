@@ -25,7 +25,7 @@ async function equipBestWeapon(bot) {
 }
 
 async function punch(bot, target) {
-	await bot.attack(target);
+	if (target) await bot.attack(target);
 }
 
 async function crit(bot, target) {
