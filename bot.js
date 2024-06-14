@@ -47,17 +47,27 @@ bot.getEntity = (name)=>{
 
 function findThreat() {
 	return bot.nearestEntity((entity)=>{
-		if (entity.kind !== "Hostile mobs") return false;
+		if (entity.kind !== "Hostile mobs" && !targetList.includes(entity.username)) return false;
 
 		const distanceFromBot = entity.position.distanceTo(bot.entity.position);
 
 		if (distanceFromBot < 8) return true;
 
-		if (!guardedPlayer || !guardPlayer.entity) return false;
+		if (!guardedPlayer || !guardedPlayer.entity) return false;
 
 		const distanceFromPlayer = entity.position.distanceTo(guardedPlayer.entity.position);
 
 		if (distanceFromPlayer < 16) return true;
+	});
+}
+
+function findAttacker(position=bot.entity.position) {
+	return bot.nearestEntity((entity)=>{
+		if (bossList.includes(entity.username)) return false;
+
+		const distance = entity.position.distanceTo(position);
+
+		if (distance < 5) return true;
 	});
 }
 
@@ -245,10 +255,30 @@ bot.on("health", async ()=>{
 	await eatFood();
 });
 
-bot.on('entityGone', (entity)=>{
-	const targetIndex = targetList.indexOf(entity);
+bot.on("entityGone", (entity)=>{
+	const targetIndex = targetList.indexOf(entity.username);
 
 	if (targetIndex === -1) return;
 	
 	targetList.splice(targetIndex, 1);
+});
+
+bot.on("entityHurt", (entity)=>{
+	let attacked = false;
+
+	if (entity === bot.entity) attacked = true;
+
+	if (guardedPlayer && guardedPlayer.entity) {
+		if (entity === guardedPlayer.entity) attacked = true;
+	}
+
+	if (attacked) {
+		sendMessage(`${entity.username} was hurt!`);
+
+		const attacker = findAttacker(bot.entity.position);
+
+		if (attacker && !targetList.includes(attacker.username)) {
+			targetList.push(attacker.username);
+		}
+	}
 });
